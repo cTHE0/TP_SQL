@@ -56,6 +56,37 @@ FROM GENRE g
 LEFT JOIN ECRIVAIN e ON g.idgenre = e.genre_id
 WHERE e.idecr IS NULL;
 
+/* Q7 */
+SELECT g.gnom, l.lnom, COUNT(enom)
+FROM GENRE g
+LEFT JOIN LOCALISATION l ON GENRE.LOC_ID = l.IDLOC
+INNER JOIN ECRIVAIN e ON g.idgenre = e.GENRE_ID;
+
+SELECT 
+g.gnom AS genre_litteraire, 
+l.lnom AS localisation, 
+COUNT(e.idecr) AS nombre_ecrivains, 
+ROUND(AVG(e.livres_vendus), 2) AS moyenne_livres_vendus
+FROM 
+GENRE g
+LEFT JOIN 
+LOCALISATION l ON g.loc_id = l.idloc
+LEFT JOIN 
+ECRIVAIN e ON g.idgenre = e.genre_id
+GROUP BY 
+g.gnom, l.lnom
+ORDER BY 
+g.gnom;
+
+/* Q8 */
+SELECT
+g.gnom, NVL(l.lnom, '--')
+FROM GENRE g 
+LEFT JOIN LOCALISATION l ON g.LOC_ID = l.IDLOC
+;
+
+
+
 
 
 
