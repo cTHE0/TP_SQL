@@ -43,12 +43,18 @@ WHERE NOT EXISTS (
     FROM ECRIVAIN e
     WHERE e.genre_id = g.idgenre
 );
-/* Avec NOT IN: Je ne comprends pas pourquoi cela ne fonctionne pas*/
+/* Avec NOT IN*/
+
+SELECT genre_id from ecrivain;
+
+SELECT g.IDGENRE FROM GENRE g;
+
 SELECT g.gnom
 FROM GENRE g
-WHERE g.idgenre NOT IN (
+WHERE g.idgenre NOT IN ( /* La présence de NULL crée une erreur avec IN */
     SELECT e.genre_id
     FROM ECRIVAIN e
+    WHERE NOT e.GENRE_ID IS NULL
 );
 /* AVEC IS NULL */
 SELECT g.gnom
@@ -80,14 +86,53 @@ g.gnom;
 
 /* Q8 */
 SELECT
-g.gnom, NVL(l.lnom, '--')
+g.gnom, NVL(l.lnom, '--'), COUNT(e.IDECR)
 FROM GENRE g 
 LEFT JOIN LOCALISATION l ON g.LOC_ID = l.IDLOC
+LEFT JOIN ECRIVAIN e ON g.IDGENRE = e.GENRE_ID
+GROUP BY g.gnom
 ;
 
+SELECT 
+    g.gnom AS genre_litteraire, 
+    NVL(l.lnom, '--') AS localisation, 
+    NVL(COUNT(e.idecr), 0) AS nombre_ecrivains, 
+    NVL(ROUND(AVG(e.livres_vendus), 2), 0) AS moyenne_livres_vendus
+FROM 
+    GENRE g
+LEFT JOIN 
+    LOCALISATION l ON g.loc_id = l.idloc
+LEFT JOIN 
+    ECRIVAIN e ON g.idgenre = e.genre_id
+GROUP BY 
+    g.gnom, l.lnom
+ORDER BY 
+    g.gnom;
 
+/* Q9 */
+SELECT e.enom, e.pnom, NVL(e2.ENOM, '--'), NVL(e2.PNOM, '--')
+FROM ECRIVAIN e 
+LEFT JOIN ECRIVAIN e2 ON e.CHEF_DE_FILE = e2.IDECR
+;
 
+/* Q10 */
+SELECT 
+e.enom AS nom,
+e.pnom AS prenom,
+NVL(COUNT(c.idecr), 0) AS nombre_chefs_de_file
+FROM 
+ECRIVAIN e
+LEFT JOIN 
+ECRIVAIN c ON e.idecr = c.CHEF_DE_FILE
+GROUP BY 
+e.enom, e.pnom
+ORDER BY 
+nombre_chefs_de_file DESC;
 
+/* Q11 */
+SELECT e.enom
+FROM ECRIVAIN e
+WHERE e.CHEF_DE_FILE IS NULL;
 
 
 
@@ -105,5 +150,7 @@ LEFT JOIN LOCALISATION l ON g.LOC_ID = l.IDLOC
 SELECT * FROM LOCALISATION;
 SELECT * FROM GENRE;
 SELECT * FROM ECRIVAIN;
+
+
 
 DESC LOCALISATION;
